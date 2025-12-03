@@ -5,84 +5,334 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cetak Multi-Sheet PDF</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet" />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      /* Custom scrollbar for textarea */
+      textarea::-webkit-scrollbar {
+        width: 6px;
+      }
+      textarea::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+      textarea::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 3px;
+      }
+      textarea::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+      }
+
+      /* Subtle focus animation */
+      .input-group:focus-within label {
+        color: #2563eb;
+      }
+      .input-group:focus-within input,
+      .input-group:focus-within textarea {
+        border-color: #3b82f6;
+      }
+    </style>
   </head>
-  <body class="bg-gray-50 text-gray-800 p-6">
-    <h1 class="text-2xl font-bold mb-6">🖨️ Cetak Multi-Sheet PDF</h1>
-
-    <div class="space-y-4 max-w-xl">
-      <div>
-        <label class="block font-semibold">Link Folder Drive:</label>
-        <input type="text" id="folderLink" class="w-full mt-1 p-2 border rounded-md" />
+  <body class="bg-white text-slate-800 min-h-screen p-0">
+    <div class="w-full flex flex-col min-h-screen">
+      <!-- Header -->
+      <div class="bg-blue-600 px-4 py-3 text-white shadow-sm sticky top-0 z-10">
+        <div class="flex justify-between items-center">
+          <h1 class="text-sm font-bold flex items-center gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+            </svg>
+            Cetak PDF
+          </h1>
+          <span
+            class="text-[10px] bg-blue-700 px-1.5 py-0.5 rounded text-blue-100 font-mono"
+            >v2.0.2</span
+          >
+        </div>
+        <p class="text-blue-100 text-[10px] mt-1 opacity-90 leading-tight">
+          Export Laporan Siswa ke PDF Massal
+        </p>
       </div>
 
-      <div>
-        <label class="block font-semibold">Nama Sheet Referensi (untuk nama & nomor):</label>
-        <input type="text" id="refSheet" class="w-full mt-1 p-2 border rounded-md" placeholder="Contoh: Identitas" />
+      <!-- Alert Box -->
+      <div
+        id="statusMessage"
+        class="hidden mx-3 mt-3 p-2 rounded-md text-xs font-medium border-l-4 shadow-sm"></div>
+
+      <!-- Form Content -->
+      <div class="p-3 space-y-4 pb-8">
+        <!-- Section: Folder -->
+        <div class="input-group">
+          <label
+            class="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wide flex items-center gap-1">
+            Link Folder Drive
+          </label>
+          <input
+            type="text"
+            id="folderLink"
+            class="w-full px-2.5 py-2 bg-slate-50 border border-slate-300 rounded text-xs transition-all outline-none placeholder-slate-400"
+            placeholder="Tempel link folder tujuan di sini..." />
+          <p class="text-[9px] text-slate-500 mt-1 italic">
+            *Folder Google Drive untuk menyimpan hasil PDF.
+          </p>
+        </div>
+
+        <hr class="border-slate-100" />
+
+        <!-- Section: Reference -->
+        <div class="space-y-3">
+          <div class="input-group">
+            <label
+              class="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wide">
+              Nama Sheet Referensi
+            </label>
+            <input
+              type="text"
+              id="refSheet"
+              class="w-full px-2.5 py-2 bg-slate-50 border border-slate-300 rounded text-xs outline-none"
+              placeholder="Contoh: Database" />
+            <p class="text-[9px] text-slate-500 mt-1 italic">
+              *Nama sheet yang berisi data acuan (Nama & No Urut).
+            </p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div class="input-group">
+              <label
+                class="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wide"
+                >Cell Nama</label
+              >
+              <input
+                type="text"
+                id="nameRefCell"
+                class="w-full px-2 py-2 bg-slate-50 border border-slate-300 rounded text-xs text-center font-mono uppercase"
+                placeholder="F1" />
+              <p
+                class="text-[9px] text-slate-400 mt-1 leading-tight text-center">
+                Cell penampil Nama
+              </p>
+            </div>
+            <div class="input-group">
+              <label
+                class="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wide"
+                >Cell Nomor</label
+              >
+              <input
+                type="text"
+                id="numberRefCell"
+                class="w-full px-2 py-2 bg-slate-50 border border-slate-300 rounded text-xs text-center font-mono uppercase"
+                placeholder="B2" />
+              <p
+                class="text-[9px] text-slate-400 mt-1 leading-tight text-center">
+                Cell penampil Nomor
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Range -->
+        <div class="bg-blue-50/50 p-3 rounded-lg border border-blue-100">
+          <label
+            class="block text-[10px] font-bold text-blue-800 uppercase tracking-wider mb-2 text-center border-b border-blue-200 pb-1">
+            Rentang Nomor Urut
+          </label>
+          <div class="flex items-center gap-2">
+            <div class="flex-1 text-center">
+              <input
+                type="number"
+                id="start"
+                value="1"
+                class="w-full px-1 py-1.5 border border-blue-200 rounded text-xs text-center font-mono font-bold text-blue-700 bg-white focus:ring-1 focus:ring-blue-400 outline-none" />
+              <span class="text-[9px] text-blue-400 mt-0.5 block">Mulai</span>
+            </div>
+            <span class="text-blue-300 text-xs font-bold mb-3">➜</span>
+            <div class="flex-1 text-center">
+              <input
+                type="number"
+                id="end"
+                value="1"
+                class="w-full px-1 py-1.5 border border-blue-200 rounded text-xs text-center font-mono font-bold text-blue-700 bg-white focus:ring-1 focus:ring-blue-400 outline-none" />
+              <span class="text-[9px] text-blue-400 mt-0.5 block">Sampai</span>
+            </div>
+          </div>
+          <p class="text-[9px] text-blue-400/80 text-center mt-1 italic">
+            *Nomor urut siswa yang akan dicetak.
+          </p>
+        </div>
+
+        <!-- Section: Sheet List -->
+        <div class="input-group">
+          <div class="flex justify-between items-end mb-1">
+            <label
+              class="block text-[11px] font-bold text-slate-700 uppercase tracking-wide">
+              Daftar Sheet & Range
+            </label>
+            <span
+              class="text-[9px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-500 font-mono"
+              >Sheet | Range</span
+            >
+          </div>
+          <textarea
+            id="sheetRanges"
+            rows="4"
+            class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded text-xs font-mono leading-relaxed resize-y focus:ring-1 focus:ring-blue-500 outline-none"
+            placeholder="Sheet1 | A1:K44&#10;Sheet2 | A1:K44"></textarea>
+          <p class="text-[9px] text-slate-500 mt-1 italic">
+            *Masukkan daftar sheet yang ingin di-print per siswa.
+          </p>
+        </div>
+
+        <!-- Checkbox (DISABLED / ON PROGRESS) -->
+        <div
+          class="relative group cursor-not-allowed opacity-60 bg-gray-50 p-2.5 rounded border border-dashed border-gray-300 flex items-center justify-between">
+          <div class="flex items-center">
+            <input
+              type="checkbox"
+              id="merge"
+              disabled
+              class="w-4 h-4 text-gray-400 border-gray-300 rounded cursor-not-allowed" />
+            <label
+              for="merge"
+              class="ml-2 block text-xs font-medium text-gray-500 cursor-not-allowed">
+              Gabung jadi 1 File PDF
+            </label>
+          </div>
+          <span
+            class="text-[9px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-bold tracking-wide border border-amber-200">
+            ON PROGRESS
+          </span>
+        </div>
+
+        <!-- Action Button -->
+        <button
+          id="submitBtn"
+          onclick="submitForm()"
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg shadow-md transition-all font-semibold flex items-center justify-center text-xs tracking-wide active:scale-[0.98]">
+          <span id="buttonText" class="flex items-center gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+            </svg>
+            MULAI PROSES CETAK
+          </span>
+          <!-- Loading Spinner -->
+          <svg
+            id="loadingSpinner"
+            class="hidden animate-spin ml-2 h-4 w-4 text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24">
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+          </svg>
+        </button>
+
+        <div class="text-center pt-2 pb-4">
+          <p class="text-[9px] text-slate-300 font-medium font-mono">
+            Maintained by
+            <a
+              href="https://github.com/emRival"
+              target="_blank"
+              class="hover:text-blue-400 transition-colors cursor-pointer"
+              >@em_rival</a
+            >
+          </p>
+        </div>
       </div>
-
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label class="block font-semibold">Cell Nama Siswa:</label>
-          <input type="text" id="nameRefCell" class="w-full mt-1 p-2 border rounded-md" placeholder="Contoh: F1" />
-        </div>
-        <div>
-          <label class="block font-semibold">Cell Nomor Berubah:</label>
-          <input type="text" id="numberRefCell" class="w-full mt-1 p-2 border rounded-md" placeholder="Contoh: B2" />
-        </div>
-      </div>
-
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label class="block font-semibold">Nomor Awal:</label>
-          <input type="number" id="start" value="1" class="w-full mt-1 p-2 border rounded-md" />
-        </div>
-        <div>
-          <label class="block font-semibold">Nomor Akhir:</label>
-          <input type="number" id="end" value="10" class="w-full mt-1 p-2 border rounded-md" />
-        </div>
-      </div>
-
-     <div>
-          <label class="block font-semibold">Daftar Sheet & Range:</label>
-          <textarea id="sheetRanges" rows="5" class="w-full mt-1 p-2 border rounded-md" placeholder="7A - Report 1|A1:K44&#10;7A - Report 2|A1:K44"></textarea>
-        </div>
-
-      <div>
-        <label class="inline-flex items-center">
-          <input type="checkbox" id="merge" class="mr-2" />
-          Gabung semua halaman (merge PDF)
-        </label>
-      </div>
-
-      <button
-        id="submitBtn"
-        onclick="submitForm()"
-        class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 font-semibold flex items-center justify-center"
-      >
-        <span id="buttonText">📄 Cetak PDF</span>
-        <svg id="loadingSpinner" class="hidden animate-spin ml-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
-          viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor"
-            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-        </svg>
-      </button>
     </div>
 
     <script>
+      function showStatus(message, type) {
+        const el = document.getElementById("statusMessage");
+        el.classList.remove(
+          "hidden",
+          "bg-green-50",
+          "text-green-800",
+          "border-green-500",
+          "bg-red-50",
+          "text-red-800",
+          "border-red-500"
+        );
+
+        if (type === "success") {
+          el.classList.add("bg-green-50", "text-green-800", "border-green-500");
+          el.innerHTML = `<div class="flex items-start gap-2"><svg class="w-4 h-4 mt-0.5 flex-shrink-0 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>${message}</span></div>`;
+        } else {
+          el.classList.add("bg-red-50", "text-red-800", "border-red-500");
+          el.innerHTML = `<div class="flex items-start gap-2"><svg class="w-4 h-4 mt-0.5 flex-shrink-0 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span>${message}</span></div>`;
+        }
+        el.classList.remove("hidden");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
       function submitForm() {
+        document.getElementById("statusMessage").classList.add("hidden");
+
         const folderLink = document.getElementById("folderLink").value;
         const folderIdMatch = folderLink.match(/[-\w]{25,}/);
+
         if (!folderIdMatch) {
-          alert("❌ Link folder tidak valid.");
+          showStatus(
+            "Link Drive tidak valid. Pastikan link yang dicopy benar.",
+            "error"
+          );
           return;
         }
 
-        const sheetRangesRaw = document.getElementById("sheetRanges").value.trim().split('\n');
-        const sheetsData = sheetRangesRaw.map(line => {
-          const [sheetName, range] = line.split('|');
-          return { sheetName: sheetName.trim(), range: range.trim() };
-        });
+        const sheetRangesVal = document
+          .getElementById("sheetRanges")
+          .value.trim();
+        if (!sheetRangesVal) {
+          showStatus("Daftar Sheet & Range tidak boleh kosong.", "error");
+          return;
+        }
+
+        const sheetRangesRaw = sheetRangesVal.split("\n");
+        const sheetsData = sheetRangesRaw
+          .map((line) => {
+            const parts = line.split("|");
+            if (parts.length < 2) return null;
+            return { sheetName: parts[0].trim(), range: parts[1].trim() };
+          })
+          .filter((item) => item !== null);
+
+        if (sheetsData.length === 0) {
+          showStatus(
+            "Format Sheet salah. Gunakan tanda pipa '|' sebagai pemisah.",
+            "error"
+          );
+          return;
+        }
 
         const formData = {
           folderId: folderIdMatch[0],
@@ -93,7 +343,7 @@
           start: document.getElementById("start").value,
           end: document.getElementById("end").value,
           sheetsData: sheetsData,
-          merge: document.getElementById("merge").checked
+          merge: false, // Force false karena fitur disabled
         };
 
         const btn = document.getElementById("submitBtn");
@@ -101,23 +351,47 @@
         const btnText = document.getElementById("buttonText");
 
         btn.disabled = true;
+        btn.classList.add("opacity-75", "cursor-not-allowed");
         spinner.classList.remove("hidden");
-        btnText.textContent = "Memproses...";
+        btnText.innerHTML = "MEMPROSES...";
 
-        google.script.run
-          .withSuccessHandler(() => {
-            alert("✅ PDF berhasil dibuat!");
+        if (typeof google !== "undefined" && google.script) {
+          google.script.run
+            .withSuccessHandler(() => {
+              showStatus(
+                "Berhasil! File PDF telah disimpan di Google Drive.",
+                "success"
+              );
+              spinner.classList.add("hidden");
+              btn.disabled = false;
+              btn.classList.remove("opacity-75", "cursor-not-allowed");
+              btnText.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" />
+                </svg> MULAI PROSES CETAK`;
+            })
+            .withFailureHandler((err) => {
+              showStatus("Gagal: " + err.message, "error");
+              spinner.classList.add("hidden");
+              btn.disabled = false;
+              btn.classList.remove("opacity-75", "cursor-not-allowed");
+              btnText.innerHTML = "COBA LAGI";
+            })
+            .runPDFGenerator(formData);
+        } else {
+          // Fallback lokal
+          console.log("Data submitted (Local Test):", formData);
+          setTimeout(() => {
+            showStatus(
+              "Mode Testing: Data valid (Simulasi Sukses).",
+              "success"
+            );
             spinner.classList.add("hidden");
             btn.disabled = false;
-            btnText.textContent = "📄 Cetak PDF";
-          })
-          .withFailureHandler((err) => {
-            alert("❌ Gagal membuat PDF:\n" + err.message);
-            spinner.classList.add("hidden");
-            btn.disabled = false;
-            btnText.textContent = "📄 Cetak PDF";
-          })
-          .runPDFGenerator(formData);
+            btn.classList.remove("opacity-75", "cursor-not-allowed");
+            btnText.innerHTML = "MULAI PROSES CETAK";
+          }, 1500);
+        }
       }
     </script>
   </body>
