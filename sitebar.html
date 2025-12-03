@@ -12,20 +12,6 @@
       body {
         font-family: "Inter", sans-serif;
       }
-      /* Custom scrollbar for textarea */
-      textarea::-webkit-scrollbar {
-        width: 6px;
-      }
-      textarea::-webkit-scrollbar-track {
-        background: #f1f1f1;
-      }
-      textarea::-webkit-scrollbar-thumb {
-        background: #c1c1c1;
-        border-radius: 3px;
-      }
-      textarea::-webkit-scrollbar-thumb:hover {
-        background: #a8a8a8;
-      }
 
       /* Subtle focus animation */
       .input-group:focus-within label {
@@ -34,6 +20,21 @@
       .input-group:focus-within input,
       .input-group:focus-within textarea {
         border-color: #3b82f6;
+      }
+
+      /* Animation for new rows */
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .sheet-row {
+        animation: slideDown 0.2s ease-out forwards;
       }
     </style>
   </head>
@@ -53,13 +54,13 @@
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 stroke-width="2"
-                d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
             </svg>
             Cetak PDF
           </h1>
           <span
             class="text-[10px] bg-blue-700 px-1.5 py-0.5 rounded text-blue-100 font-mono"
-            >v2.0.2</span
+            >v2.0.4</span
           >
         </div>
         <p class="text-blue-100 text-[10px] mt-1 opacity-90 leading-tight">
@@ -86,7 +87,7 @@
             class="w-full px-2.5 py-2 bg-slate-50 border border-slate-300 rounded text-xs transition-all outline-none placeholder-slate-400"
             placeholder="Tempel link folder tujuan di sini..." />
           <p class="text-[9px] text-slate-500 mt-1 italic">
-            *Folder Google Drive untuk menyimpan hasil PDF.
+            *Link drive untuk menyimpan hasil file PDF.
           </p>
         </div>
 
@@ -105,7 +106,7 @@
               class="w-full px-2.5 py-2 bg-slate-50 border border-slate-300 rounded text-xs outline-none"
               placeholder="Contoh: Database" />
             <p class="text-[9px] text-slate-500 mt-1 italic">
-              *Nama sheet yang berisi data acuan (Nama & No Urut).
+              *Nama sheet untuk acuan nama & nomor urut.
             </p>
           </div>
 
@@ -122,7 +123,7 @@
                 placeholder="F1" />
               <p
                 class="text-[9px] text-slate-400 mt-1 leading-tight text-center">
-                Cell penampil Nama
+                *Cell penampil Nama
               </p>
             </div>
             <div class="input-group">
@@ -137,7 +138,7 @@
                 placeholder="B2" />
               <p
                 class="text-[9px] text-slate-400 mt-1 leading-tight text-center">
-                Cell penampil Nomor
+                *Cell nomor berubah
               </p>
             </div>
           </div>
@@ -147,7 +148,7 @@
         <div class="bg-blue-50/50 p-3 rounded-lg border border-blue-100">
           <label
             class="block text-[10px] font-bold text-blue-800 uppercase tracking-wider mb-2 text-center border-b border-blue-200 pb-1">
-            Rentang Nomor Urut
+            Rentang Nomor
           </label>
           <div class="flex items-center gap-2">
             <div class="flex-1 text-center">
@@ -169,31 +170,104 @@
             </div>
           </div>
           <p class="text-[9px] text-blue-400/80 text-center mt-1 italic">
-            *Nomor urut siswa yang akan dicetak.
+            *Nomor urutan raport siswa yang mau dicetak.
           </p>
         </div>
 
-        <!-- Section: Sheet List -->
+        <!-- Section: Sheet List Config (New Dynamic UI) -->
         <div class="input-group">
-          <div class="flex justify-between items-end mb-1">
+          <div class="flex justify-between items-center mb-2">
             <label
               class="block text-[11px] font-bold text-slate-700 uppercase tracking-wide">
-              Daftar Sheet & Range
+              Konfigurasi Sheet
             </label>
-            <span
-              class="text-[9px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-500 font-mono"
-              >Sheet | Range</span
-            >
+            <button
+              type="button"
+              onclick="addSheetRow()"
+              class="flex items-center gap-1 text-[10px] bg-blue-50 text-blue-600 px-2 py-1 rounded border border-blue-200 hover:bg-blue-100 hover:border-blue-300 transition-colors font-semibold">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-3 w-3"
+                viewBox="0 0 20 20"
+                fill="currentColor">
+                <path
+                  fill-rule="evenodd"
+                  d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                  clip-rule="evenodd" />
+              </svg>
+              Tambah
+            </button>
           </div>
-          <textarea
-            id="sheetRanges"
-            rows="4"
-            class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded text-xs font-mono leading-relaxed resize-y focus:ring-1 focus:ring-blue-500 outline-none"
-            placeholder="Sheet1 | A1:K44&#10;Sheet2 | A1:K44"></textarea>
-          <p class="text-[9px] text-slate-500 mt-1 italic">
-            *Masukkan daftar sheet yang ingin di-print per siswa.
+
+          <div id="sheetContainer" class="space-y-2">
+            <!-- Rows will be added here by JS -->
+          </div>
+
+          <p
+            class="text-[9px] text-slate-400 mt-2 italic border-l-2 border-blue-200 pl-2">
+            <b>Tips:</b> Alias digunakan untuk mengganti nama file PDF. <br />
+            Kosongkan jika ingin menggunakan nama sheet asli.
           </p>
         </div>
+
+        <!-- Template for Sheet Row -->
+        <template id="sheetRowTemplate">
+          <div
+            class="sheet-row bg-slate-50 p-2 rounded-lg border border-slate-200 relative group hover:border-blue-200 transition-colors">
+            <!-- Delete Button -->
+            <button
+              type="button"
+              onclick="removeSheetRow(this)"
+              class="absolute -top-1.5 -right-1.5 bg-white text-red-400 border border-slate-200 rounded-full w-5 h-5 flex items-center justify-center hover:text-red-600 hover:border-red-300 shadow-sm transition-all"
+              title="Hapus">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-3 w-3"
+                viewBox="0 0 20 20"
+                fill="currentColor">
+                <path
+                  fill-rule="evenodd"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  clip-rule="evenodd" />
+              </svg>
+            </button>
+
+            <div class="grid grid-cols-2 gap-2 mb-2">
+              <div>
+                <label class="text-[9px] text-slate-500 font-medium ml-0.5"
+                  >Nama Sheet</label
+                >
+                <input
+                  type="text"
+                  class="input-sheet w-full px-2 py-1.5 bg-white border border-slate-300 rounded text-xs focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                  placeholder="Ex: P_Rapor1" />
+              </div>
+              <div>
+                <label class="text-[9px] text-slate-500 font-medium ml-0.5"
+                  >Range (Ex: A1:K44)</label
+                >
+                <input
+                  type="text"
+                  class="input-range w-full px-2 py-1.5 bg-white border border-slate-300 rounded text-xs focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none uppercase font-mono"
+                  placeholder="A1:K44" />
+              </div>
+            </div>
+            <div>
+              <label
+                class="text-[9px] text-slate-500 font-medium ml-0.5 flex items-center gap-1">
+                Alias Filename
+                <span
+                  class="text-slate-300 text-[8px] border border-slate-200 px-1 rounded"
+                  >Opsional</span
+                >
+              </label>
+              <input
+                type="text"
+                class="input-alias w-full px-2 py-1.5 bg-white border border-slate-300 rounded text-xs focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                placeholder="Ex: Rapor UTS (Tanpa Nama Siswa)" />
+            </div>
+          </div>
+        </template>
 
         <!-- Checkbox (DISABLED / ON PROGRESS) -->
         <div
@@ -272,6 +346,33 @@
     </div>
 
     <script>
+      // Initialize: Add one empty row
+      window.addEventListener("DOMContentLoaded", () => {
+        addSheetRow();
+      });
+
+      function addSheetRow() {
+        const container = document.getElementById("sheetContainer");
+        const template = document.getElementById("sheetRowTemplate");
+        const clone = template.content.cloneNode(true);
+        container.appendChild(clone);
+      }
+
+      function removeSheetRow(btn) {
+        const container = document.getElementById("sheetContainer");
+        // Prevent removing the last row if you want at least one
+        if (container.children.length > 1) {
+          const row = btn.closest(".sheet-row");
+          row.remove();
+        } else {
+          // Optional: Clear values instead of removing if it's the last one
+          const row = btn.closest(".sheet-row");
+          row.querySelector(".input-sheet").value = "";
+          row.querySelector(".input-range").value = "";
+          row.querySelector(".input-alias").value = "";
+        }
+      }
+
       function showStatus(message, type) {
         const el = document.getElementById("statusMessage");
         el.classList.remove(
@@ -309,28 +410,20 @@
           return;
         }
 
-        const sheetRangesVal = document
-          .getElementById("sheetRanges")
-          .value.trim();
-        if (!sheetRangesVal) {
-          showStatus("Daftar Sheet & Range tidak boleh kosong.", "error");
-          return;
-        }
-
-        const sheetRangesRaw = sheetRangesVal.split("\n");
-        const sheetsData = sheetRangesRaw
-          .map((line) => {
-            const parts = line.split("|");
-            if (parts.length < 2) return null;
-            return { sheetName: parts[0].trim(), range: parts[1].trim() };
+        // Collect Data from Dynamic Rows
+        const sheetRows = document.querySelectorAll(".sheet-row");
+        const sheetsData = Array.from(sheetRows)
+          .map((row) => {
+            return {
+              sheetName: row.querySelector(".input-sheet").value.trim(),
+              range: row.querySelector(".input-range").value.trim(),
+              alias: row.querySelector(".input-alias").value.trim(),
+            };
           })
-          .filter((item) => item !== null);
+          .filter((item) => item.sheetName !== "" && item.range !== "");
 
         if (sheetsData.length === 0) {
-          showStatus(
-            "Format Sheet salah. Gunakan tanda pipa '|' sebagai pemisah.",
-            "error"
-          );
+          showStatus("Mohon isi minimal satu Nama Sheet dan Range.", "error");
           return;
         }
 
@@ -342,8 +435,8 @@
           numberRefCell: document.getElementById("numberRefCell").value.trim(),
           start: document.getElementById("start").value,
           end: document.getElementById("end").value,
-          sheetsData: sheetsData,
-          merge: false, // Force false karena fitur disabled
+          sheetsData: sheetsData, // New Format Array of Objects
+          merge: false,
         };
 
         const btn = document.getElementById("submitBtn");
@@ -383,7 +476,7 @@
           console.log("Data submitted (Local Test):", formData);
           setTimeout(() => {
             showStatus(
-              "Mode Testing: Data valid (Simulasi Sukses).",
+              "Mode Testing: Data valid (Simulasi Sukses). Cek Console untuk melihat struktur data.",
               "success"
             );
             spinner.classList.add("hidden");
